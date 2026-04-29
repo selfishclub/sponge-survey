@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧽 스폰지클럽 1기 — 사전 서베이</title>
+  <meta name="description" content="스폰지클럽 1기 조 배정을 위한 사전 서베이입니다." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              ink: '#0a0a0a',
+              accent: '#e9ed12',
+              coral: '#ff6f59',
+              cream: '#faf8f3',
+              line: '#e8e6df',
+              mute: '#6b6b6b',
+            },
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html, body { background: #faf8f3; color: #0a0a0a; font-family: 'Pretendard', system-ui, sans-serif; }
+    body { -webkit-font-smoothing: antialiased; }
+    .field-label { font-weight: 700; font-size: 1rem; }
+    .field-required::after { content: ' *'; color: #ff6f59; font-weight: 800; }
+    input[type="text"], input[type="email"], input[type="tel"], textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e8e6df;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+      font-family: inherit;
+    }
+    textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(233, 237, 18, 0.4);
+    }
+    .radio-row, .checkbox-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border: 1.5px solid #e8e6df; border-radius: 10px; cursor: pointer;
+      background: #fff; transition: all .15s;
+    }
+    .radio-row:hover, .checkbox-row:hover { border-color: #0a0a0a; }
+    .radio-row input, .checkbox-row input { margin-top: 4px; accent-color: #0a0a0a; width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+    .radio-row.selected, .checkbox-row.selected { border-color: #0a0a0a; background: #fffde6; box-shadow: inset 4px 0 0 #e9ed12; }
+    .section-num {
+      display: inline-block; padding: 6px 12px; background: #0a0a0a; color: #fff;
+      font-size: .75rem; font-weight: 800; letter-spacing: .1em; border-radius: 999px; margin-bottom: 16px;
+    }
+    .alert-box { border-radius: 14px; padding: 24px; margin: 24px 0; border: 2px solid; }
+    .alert-warn { background: #fff5f3; border-color: #ff6f59; }
+    .alert-info { background: #f6f5ee; border-color: #0a0a0a; }
+    .alert-camp { background: #fffde6; border-color: #e9ed12; }
+    .alert-perk { background: #0a0a0a; color: #fff; border-color: #e9ed12; }
+    .alert-perk strong { color: #e9ed12; }
+    .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 16px 0; font-size: .95rem; }
+    .schedule-table th, .schedule-table td { padding: 14px; text-align: left; border-bottom: 1px solid #e8e6df; vertical-align: top; }
+    .schedule-table th { background: #0a0a0a; color: #fff; font-weight: 700; }
+    .schedule-table th:first-child { border-top-left-radius: 10px; }
+    .schedule-table th:last-child { border-top-right-radius: 10px; }
+    .schedule-table tbody tr:hover { background: #fffde6; }
+    .schedule-table tbody tr.is-offline { background: #fffde6; font-weight: 600; }
+    .submit-btn {
+      background: #0a0a0a; color: #fff; padding: 18px 32px; border-radius: 12px;
+      font-weight: 800; font-size: 1.05rem; width: 100%; border: 2px solid #0a0a0a;
+      cursor: pointer; transition: all .15s; box-shadow: 6px 6px 0 #e9ed12;
+    }
+    .submit-btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 #e9ed12; }
+    .submit-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #e9ed12; }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 4px; background: #e9ed12; z-index: 50;
+      width: 0%; transition: width .2s;
+    }
+    .conditional { display: none; }
+    .conditional.active { display: block; animation: slideDown .25s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .sticky-header {
+      position: sticky; top: 0; z-index: 40; background: rgba(250, 248, 243, 0.92);
+      backdrop-filter: blur(8px); border-bottom: 1px solid #e8e6df;
+    }
+    .error-msg { color: #ff6f59; font-size: .85rem; font-weight: 600; margin-top: 6px; display: none; }
+    .has-error input, .has-error textarea { border-color: #ff6f59 !important; }
+    .has-error .error-msg { display: block; }
+    .question-block { margin-bottom: 28px; }
+    .question-desc { color: #6b6b6b; font-size: .9rem; margin-top: 4px; line-height: 1.6; }
+    .week-emoji { display: inline-block; margin-right: 4px; }
+    .success-screen { display: none; }
+    .success-screen.active { display: block; }
+    .form-screen.hidden-screen { display: none; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div id="progressBar" class="progress-bar"></div>
+
+  <header class="sticky-header">
+    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🧽</span>
+        <span class="font-bold text-sm sm:text-base">스폰지클럽 1기 사전 서베이</span>
+      </div>
+      <div class="text-xs text-brand-mute font-semibold" id="progressText">0%</div>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-12">
+
+    <!-- ===== HERO ===== -->
+    <section class="mb-16">
+      <div class="inline-block px-3 py-1 bg-brand-accent text-brand-ink text-xs font-black tracking-wider rounded-full mb-6">PRE-SURVEY</div>
+      <h1 class="text-4xl sm:text-5xl font-black tracking-tight leading-tight mb-6">
+        🧽 스폰지클럽 1기<br />
+        <span class="text-brand-mute">— 사전 서베이</span>
+      </h1>
+      <div class="text-base sm:text-lg leading-relaxed space-y-4 text-brand-ink">
+        <p>1기에 합류해 주셔서 감사합니다.</p>
+        <p>이 서베이는 <strong>조 배정을 위한 사전 서베이</strong>이자, 앞으로 7주를 어떤 마음가짐으로 시작할지 스스로 정리해 보는 시간입니다.</p>
+        <p>스폰지클럽은 일방적인 강의나 단순한 커뮤니티가 아니라, <strong>'이기적 공유'</strong>를 기반으로 한 프로그램이에요. 내가 한 주 동안 발견한 것을 조에 꺼내면, 조원들도 각자의 발견을 돌려줍니다. 혼자서는 1주치 학습이지만, 조에서는 8~10주치가 돌아오는 구조라 본인이 얼마나 시간을 쓰고 얼마나 꺼내느냐에 따라 7주 뒤의 결과가 달라집니다.</p>
+        <p class="font-semibold">천천히 답해주세요.</p>
+        <p class="inline-block px-3 py-1.5 bg-brand-ink text-brand-cream text-sm font-semibold rounded">⏱ 소요 시간: 약 10~15분</p>
+      </div>
+    </section>
+
+    <form id="surveyForm" class="form-screen" novalidate>
+
+      <!-- ===== SECTION 1 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 1</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-8">기본 정보 및 자기소개</h2>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q1">Q1. 이름</label>
+          <p class="question-desc">슬랙·온라인 닉네임으로 사용하실 이름</p>
+          <input type="text" id="q1" name="q1" required class="mt-3" />
+          <div class="error-msg">이름을 입력해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q2">Q2. 이메일</label>
+          <p class="question-desc">운영 안내 수신용</p>
+          <input type="email" id="q2" name="q2" required class="mt-3" />
+          <div class="error-msg">올바른 이메일을 입력해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q3">Q3. 연락처</label>
+          <p class="question-desc">연락 가능한 휴대폰 번호</p>
+          <input type="tel" id="q3" name="q3" required class="mt-3" placeholder="010-0000-0000" />
+          <div class="error-msg">연락처를 입력해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q4">Q4. GitHub 계정 이메일</label>
+          <div class="question-desc">
+            <p>W1 미니 세션부터 GitHub 계정이 필요합니다. 초대를 위해 계정 아이디가 아닌 <strong>이메일 주소</strong>를 적어주세요.</p>
+            <p class="mt-1">아직 계정이 없으시면 <a href="https://github.com" target="_blank" class="underline font-semibold">github.com</a> 에서 무료로 가입하신 뒤 가입에 사용한 이메일을 적어주시면 됩니다.</p>
+            <p class="mt-1">확인 방법: GitHub 로그인 → 우측 상단 프로필 → Settings → Emails</p>
+          </div>
+          <input type="email" id="q4" name="q4" required class="mt-3" />
+          <div class="error-msg">GitHub 가입 이메일을 입력해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q5">Q5. 현재 하고 계신 일</label>
+          <p class="question-desc">한 줄로 소개해 주세요</p>
+          <input type="text" id="q5" name="q5" required class="mt-3" placeholder="뷰티 브랜드 콘텐츠 마케터 / 1인 IT 스타트업 대표 / 직장인 + 사이드 프로젝트 운영" />
+          <div class="error-msg">현재 하시는 일을 입력해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <p class="field-label field-required">Q6. 본인을 가장 잘 설명하는 카테고리</p>
+          <div class="space-y-2 mt-3" id="q6Group">
+            <label class="radio-row"><input type="radio" name="q6" value="마케터·콘텐츠 담당자" required /><span>마케터·콘텐츠 담당자</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="CRM·고객 접점 담당자" /><span>CRM·고객 접점 담당자</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="1인 대표·창업자" /><span>1인 대표·창업자</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="프리랜서·외주 작업자" /><span>프리랜서·외주 작업자</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="사이드 프로젝트를 운영하는 직장인" /><span>사이드 프로젝트를 운영하는 직장인</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="기획·PM 직군" /><span>기획·PM 직군</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="디자이너·크리에이터" /><span>디자이너·크리에이터</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="개발자·엔지니어" /><span>개발자·엔지니어</span></label>
+            <label class="radio-row"><input type="radio" name="q6" value="기타" id="q6Other" /><span>그 외 (직접 입력)</span></label>
+          </div>
+          <div class="conditional mt-3" id="q6OtherWrap">
+            <input type="text" id="q6OtherText" name="q6_other" placeholder="직접 입력해주세요" />
+          </div>
+          <div class="error-msg">카테고리를 선택해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q7">Q7. 스폰지클럽 1기에 왜 참여하시나요?</label>
+          <p class="question-desc">참여하게 된 계기와, 7주를 통해 무엇을 기대하시는지 함께 적어주세요.</p>
+          <textarea id="q7" name="q7" required class="mt-3"></textarea>
+          <div class="error-msg">참여 이유를 작성해주세요.</div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 2 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 2</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">AI 도구 사용 경험</h2>
+        <p class="text-brand-mute leading-relaxed mb-8">
+          조 배정과 W1 사전 안내에 활용하기 위해, 본인의 AI 사용 경험을 솔직하게 적어주세요.<br />
+          정답이 있는 질문이 아닙니다. 잘 못 써도 괜찮고, 많이 안 써도 괜찮아요.
+        </p>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q8">Q8. 최근 AI 도구를 어떻게 사용하셨나요?</label>
+          <p class="question-desc">최근 1~3개월 기준으로, 본인이 AI를 어떤 일에 어떻게 활용했는지 구체적으로 적어주세요.</p>
+          <textarea id="q8" name="q8" required class="mt-3" placeholder="콘텐츠 카피 초안 / 회의록 정리 / 리서치 / 코드 작성 / 거의 안 씀"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q9">Q9. 바이브 코딩(Vibe Coding) 사용 이력이 있으신가요?</label>
+          <p class="question-desc">있다면 어떤 도구로 무엇을 해보셨는지, 없다면 '없음'이라고 적어주세요.</p>
+          <textarea id="q9" name="q9" required class="mt-3" placeholder="Cursor로 간단한 랜딩페이지 / Claude Code로 자동화 스크립트 / Replit으로 사이드 프로젝트 / 없음"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q10">Q10. 평소에 Claude를 사용하시나요?</label>
+          <p class="question-desc">사용 빈도와 주로 어떤 용도로 쓰는지 적어주세요.</p>
+          <textarea id="q10" name="q10" required class="mt-3" placeholder="매일 사용, 주로 글쓰기·리서치 / 가끔 사용 / 거의 안 씀, ChatGPT만 사용"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q11">Q11. AI를 쓰면서 본인이 가장 막히거나 어려웠던 부분은 무엇인가요?</label>
+          <textarea id="q11" name="q11" required class="mt-3" placeholder="원하는 결과가 나올 때까지 프롬프트를 어떻게 다듬을지 / 여러 단계 작업을 엮는 법 / 결과물의 품질 판단 / 어디서부터 시작해야 할지 모르겠음"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 3 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 3</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">참여 조건과 시간 확보</h2>
+        <p class="text-brand-mute leading-relaxed mb-6">
+          스폰지클럽 1기를 제대로 굴리려면, 라이브 세션 외에도 본인 시간이 필요합니다.
+        </p>
+
+        <table class="schedule-table">
+          <thead>
+            <tr><th>구분</th><th>시간</th><th>내용</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>라이브 세션</strong></td><td>주 3시간 ~ 3시간 30분<br /><span class="text-xs text-brand-mute">(W1만 1.5시간)</span></td><td>일요일 20:00 시작</td></tr>
+            <tr><td><strong>AI 사용 시간</strong></td><td>주 18시간 권장</td><td>주말 12시간 + 평일 매일 1~2시간</td></tr>
+            <tr><td><strong>정리 및 공유 시간</strong></td><td>주 3시간 이상</td><td>학습 내용 정리 + 조 채널 이기적 공유</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-brand-mute leading-relaxed mb-8">
+          이 시간들은 7주 동안 전체적으로 확보되어야 합니다. 특정 한 주에 몰아서가 아니라, 매주 본인의 리듬 안에서 꾸준히 굴러갈 수 있게요.
+        </p>
+
+        <div class="question-block">
+          <p class="field-label field-required">Q12. 위 시간 구조를 확인하셨고, 7주 동안 위 시간을 책임감 있게 확보하실 수 있겠습니까?</p>
+          <div class="space-y-2 mt-3">
+            <label class="radio-row"><input type="radio" name="q12" value="확보 가능" required /><span>✅ 네. 7주 동안 책임감 있게 확보하겠습니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q12" value="일부 어려움" /><span>⚠️ 일부 주차는 어려울 수 있지만, 전체적으로 맞추겠습니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q12" value="어려움" /><span>❌ 솔직히 어렵습니다.</span></label>
+          </div>
+          <div class="error-msg">선택해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q13">Q13. 7주 동안 이 시간을 지키기 위해, 본인이 포기하거나 미뤄야 할 것 한 가지를 적어주세요.</label>
+          <textarea id="q13" name="q13" required class="mt-3" placeholder="평일 저녁 약속 줄이기 / 7주간 다른 사이드 프로젝트 일시 중단 / 주말 늦잠"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <!-- ⚠️ 환불 안내 박스 -->
+        <div class="alert-box alert-warn">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">⚠️</span>
+            <div class="flex-1">
+              <h3 class="font-black text-lg mb-2 text-brand-coral">환불 안내</h3>
+              <p class="leading-relaxed mb-3">
+                서베이를 작성하시면서 본인의 일정·상황상 7주를 제대로 함께 가기 어렵다고 판단되시면, <strong>4월 30일(수)까지 환불이 가능</strong>합니다.
+              </p>
+              <p class="leading-relaxed font-bold mb-3 text-brand-coral">
+                ⚠️ 5월 1일 이후에는 부분 환불도 불가합니다.<br />
+                4월 30일이 지나면 일정 조정 외의 환불·환급은 어렵다는 점, 미리 안내드립니다.
+              </p>
+              <p class="leading-relaxed text-sm">
+                환불·일정 조정이 필요하신 경우 카카오채널 <strong>[셀피쉬클럽]</strong> 또는 <a href="mailto:public.selfishclub@gmail.com" class="underline font-semibold">public.selfishclub@gmail.com</a> 으로 연락 주시면 개별로 안내드립니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 4 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 4</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-6">7주 일정과 참여 방식</h2>
+
+        <!-- 📹 카메라 사용 안내 박스 -->
+        <div class="alert-box alert-info">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">📹</span>
+            <div class="flex-1">
+              <h3 class="font-black text-lg mb-2">카메라 사용 안내</h3>
+              <p class="leading-relaxed">
+                라이브 세션과 조 모임에서는 <strong>가급적 카메라를 켜고 참여</strong>해 주세요.<br />
+                얼굴을 보고 이야기할 때 조의 리듬과 이기적 공유의 밀도가 훨씬 좋아집니다.<br />
+                부득이한 상황(이동 중, 환경상 불가 등)이 아니라면, 카메라를 켤 수 있는 환경을 미리 준비해 주시면 좋겠어요.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-lg mt-8 mb-3">7주 일정</h3>
+        <table class="schedule-table">
+          <thead>
+            <tr><th>주차</th><th>날짜</th><th>시간</th><th>형식</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>🎬 W1 오리엔테이션</td><td>5/3 (일)</td><td>20:00–21:30</td><td>온라인</td></tr>
+            <tr><td>🧩 W2</td><td>5/10 (일)</td><td>20:00–23:30</td><td>온라인</td></tr>
+            <tr><td>🎨 W3</td><td>5/17 (일)</td><td>20:00–23:30</td><td>온라인</td></tr>
+            <tr><td>🎯 W4</td><td>5/24 (일)</td><td>20:00–23:30</td><td>온라인</td></tr>
+            <tr><td>🚀 W5</td><td>5/31 (일)</td><td>20:00–23:30</td><td>온라인</td></tr>
+            <tr class="is-offline"><td>🏕️ W6</td><td>6/7 (일)</td><td>시간 별도 안내</td><td>오프라인 (서울 강남)</td></tr>
+            <tr><td>🎉 W7 마무리</td><td>6/14 (일)</td><td>20:00–23:30</td><td>온라인</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-brand-mute italic">커리큘럼은 진행 상황에 따라 일부 변경될 수 있습니다.</p>
+
+        <div class="question-block mt-8">
+          <p class="field-label">Q14. 참여가 어렵거나 불확실한 주차</p>
+          <p class="question-desc">해당하는 주차를 모두 선택해주세요.</p>
+          <div class="space-y-2 mt-3" id="q14Group">
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W1 (5/3 일)" /><span>🎬 W1 (5/3 일)</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W2 (5/10 일)" /><span>🧩 W2 (5/10 일)</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W3 (5/17 일)" /><span>🎨 W3 (5/17 일)</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W4 (5/24 일)" /><span>🎯 W4 (5/24 일)</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W5 (5/31 일)" /><span>🚀 W5 (5/31 일)</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W6 (6/7 일) — 오프라인" /><span>🏕️ W6 (6/7 일) — 오프라인</span></label>
+            <label class="checkbox-row"><input type="checkbox" name="q14" value="W7 (6/14 일)" /><span>🎉 W7 (6/14 일)</span></label>
+            <label class="checkbox-row" id="q14All"><input type="checkbox" name="q14" value="전부 참여 가능" /><span>✅ 전부 참여 가능합니다</span></label>
+          </div>
+        </div>
+
+        <div class="question-block conditional" id="q15Wrap">
+          <label class="field-label field-required" for="q15">Q15. 위에서 체크하신 주차의 사유</label>
+          <p class="question-desc">해당사항 없으면 비워두기</p>
+          <textarea id="q15" name="q15" class="mt-3"></textarea>
+          <div class="error-msg">사유를 작성해주세요.</div>
+        </div>
+
+        <!-- 🏕️ W6 오프라인 안내 박스 -->
+        <div class="alert-box alert-camp">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">🏕️</span>
+            <div class="flex-1">
+              <h3 class="font-black text-lg mb-2">W6 오프라인 모임 — 6/7 (일), 서울 강남</h3>
+              <p class="leading-relaxed">
+                7주 중 유일한 대면 모임이며, 장소는 서울 강남입니다.<br />
+                오프라인 참여가 어려운 분들을 위해 <strong>운영진이 현장 속기록을 작성해 모든 크루에게 공유</strong>드립니다. W6 핵심 내용은 별도 온라인 자료로도 정리되어 전달되니, 지방·해외·개인 사정으로 어려우셔도 충분히 따라오실 수 있어요.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <p class="field-label field-required">Q16. W6 오프라인 모임 참여 가능 여부</p>
+          <div class="space-y-2 mt-3">
+            <label class="radio-row"><input type="radio" name="q16" value="참여 가능" required /><span>✅ 참여 가능합니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q16" value="반반" /><span>⚠️ 가능성이 반반입니다. 확정되면 별도 공지하겠습니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q16" value="어려움" /><span>❌ 참여가 어렵습니다. 현장 속기록과 온라인 자료로 따라가겠습니다.</span></label>
+          </div>
+          <div class="error-msg">선택해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q17">Q17. 거주·근무 지역</label>
+          <input type="text" id="q17" name="q17" required class="mt-3" placeholder="서울 마포구 / 경기 성남 / 부산 / 대구" />
+          <div class="error-msg">지역을 입력해주세요.</div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 5 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 5</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">부조장 지원 — 더 깊이 가져가고 싶다면</h2>
+        <div class="text-brand-mute leading-relaxed space-y-3 mb-6">
+          <p>스폰지클럽 1기는 총 <strong class="text-brand-ink">6개 조 × 조당 12명</strong> 정도로 운영됩니다.</p>
+          <p>각 조에는 조장과 함께, 조에서 적극적으로 지식을 공유하는 <strong class="text-brand-ink">부조장</strong>이 있어요.</p>
+          <p>부조장은 가르치는 자리가 아닙니다.<br />
+          <strong class="text-brand-ink">'이기적 공유'</strong>에 가장 먼저 마음이 열려 있고, 그 공유를 통해 본인이 더 많이 가져가고 싶은 분들을 위한 자리예요.</p>
+          <ul class="pl-5 space-y-1 list-disc">
+            <li>조에 가장 먼저 본인의 발견을 꺼내는 사람</li>
+            <li>조원들의 작업에 가장 먼저 반응하는 사람</li>
+            <li>조의 리듬을 함께 만드는 사람</li>
+          </ul>
+          <p>이런 자리에 서면 본인이 꺼내는 양이 자연스럽게 늘고, 그만큼 곱해져서 돌아옵니다.<br />
+          <strong class="text-brand-ink">적극적으로 공유할수록 본인에게 더 큰 장점이 되는 자리</strong>라는 게 핵심이에요.</p>
+        </div>
+
+        <!-- ✨ 부조장 혜택 박스 -->
+        <div class="alert-box alert-perk">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">✨</span>
+            <div class="flex-1">
+              <h3 class="font-black text-lg mb-2"><strong>OpenClaw 셋업데이 참여 우선권</strong></h3>
+              <p class="leading-relaxed mb-3 text-brand-cream">
+                7주 기간 중 함께 모여 Claude Code 환경을 세팅하는 자리(<strong>OpenClaw 셋업데이</strong>)를 별도로 엽니다. 부조장에게는 이 자리에 우선적으로 참여하실 권한을 드립니다.
+              </p>
+              <p class="text-sm text-brand-cream/80 italic border-l-2 pl-3" style="border-color:#e9ed12">
+                ※ OpenClaw 셋업데이는 맥미니(Mac mini) 소지자를 대상으로 진행됩니다. 맥미니가 없으신 분은 우선권이 있어도 참여가 어려울 수 있다는 점, 미리 안내드려요.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <p class="field-label field-required">Q18. 부조장으로 지원하실 의향이 있으신가요?</p>
+          <div class="space-y-2 mt-3" id="q18Group">
+            <label class="radio-row"><input type="radio" name="q18" value="지원" required /><span>✅ 네, 지원하겠습니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q18" value="크루 참여" /><span>이번에는 스폰지 크루로 참여하고 싶습니다.</span></label>
+            <label class="radio-row"><input type="radio" name="q18" value="어려움" /><span>이번에 부조장 활동은 어려울 것 같습니다.</span></label>
+          </div>
+          <div class="error-msg">선택해주세요.</div>
+        </div>
+
+        <div class="question-block conditional" id="q19Wrap">
+          <label class="field-label field-required" for="q19">Q19. 부조장 역할에 끌린 이유</label>
+          <input type="text" id="q19" name="q19" class="mt-3" />
+          <div class="error-msg">이유를 입력해주세요.</div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION 6 ===== -->
+      <section class="mb-16">
+        <div class="section-num">SECTION 6</div>
+        <h2 class="text-2xl sm:text-3xl font-black mb-4">마지막 — 본인의 언어로</h2>
+        <div class="text-brand-mute leading-relaxed mb-8">
+          <p>세 문항이 남았습니다. 본인의 언어로 적어주세요.</p>
+          <p class="mt-3">7주 커리큘럼을 안정적으로 굴리기 위해 <strong class="text-brand-ink">Claude 유료 계정 사용을 권장</strong>드리며, 사용 깊이에 따라 <strong class="text-brand-ink">월 $100 ~ $200 수준의 비용이 발생할 수 있다</strong>는 점도 함께 인지하시고 답해주세요.</p>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q20">Q20. 7주 뒤, 스폰지클럽 크루들에게 어떤 사람으로 기억되고 싶으신가요?</label>
+          <input type="text" id="q20" name="q20" required class="mt-3" placeholder='"막힌 지점을 가장 빨리 꺼내는 사람" / "남의 작업에 가장 따뜻하게 반응한 사람" / "끝까지 완주한 사람"' />
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q21">Q21. 이번 7주 동안 본인이 시간과 비용을 아낌없이 써보고 싶은 영역은 무엇인가요?</label>
+          <p class="question-desc">무엇을 만들지 결정하지 않았더라도 괜찮아요. 어떤 분야에 본인의 자원을 집중하고 싶은지 전반적으로 적어주세요. 아직 고민 중이라면 <strong>'고민 중'</strong>이라고 적어주셔도 됩니다.</p>
+          <textarea id="q21" name="q21" required class="mt-3" placeholder="우리 브랜드 CRM 자동화 / 콘텐츠 OS / 사이드 프로젝트 MVP / 매장 고객 응대 챗봇 / 고민 중"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="field-label field-required" for="q22">Q22. 마지막으로, 7주 동안의 본인에게 다짐과 이번 클럽에서 얻고자 하는 바를 적어주세요.</label>
+          <textarea id="q22" name="q22" required class="mt-3" rows="6"></textarea>
+          <div class="error-msg">답변을 작성해주세요.</div>
+        </div>
+      </section>
+
+      <!-- ===== SUBMIT ===== -->
+      <section class="mb-12">
+        <div id="formError" class="alert-box alert-warn" style="display:none">
+          <p class="font-bold">⚠️ 작성하지 않은 필수 항목이 있어요.</p>
+          <p class="text-sm mt-1" id="formErrorList"></p>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">제출하기 🧽</button>
+        <p class="text-center text-xs text-brand-mute mt-4">제출 후에는 답변을 수정할 수 없습니다. 한 번 더 확인해주세요.</p>
+      </section>
+    </form>
+
+    <!-- ===== SUCCESS ===== -->
+    <section id="successScreen" class="success-screen">
+      <div class="bg-brand-ink text-brand-cream rounded-2xl p-10 my-12 text-center">
+        <div class="text-6xl mb-6">🧽</div>
+        <h2 class="text-3xl sm:text-4xl font-black mb-4">제출 완료!</h2>
+        <p class="text-lg leading-relaxed mb-3">
+          신청서 제출이 완료되었습니다.
+        </p>
+        <p class="leading-relaxed text-brand-cream/80 max-w-md mx-auto">
+          운영진이 답변을 검토한 뒤, 초대장과 사전 안내를 발송해 드릴 예정입니다.<br />
+          또한 제출해 주신 내용을 바탕으로 조 배정이 진행되니, 여러분의 솔직한 답변에 감사드립니다.
+        </p>
+      </div>
+
+      <div class="bg-brand-cream border-2 border-brand-ink rounded-2xl p-8 my-8">
+        <div class="space-y-4 leading-relaxed">
+          <p class="font-bold text-lg">딸깍 한 번으로는 갈 수 없는 곳까지, 7주를 제대로 들여서 함께 가보려 합니다.</p>
+          <p>스폰지클럽이 일반 AI 강의와 다른 단 하나의 이유는 <strong>'이기적 공유'</strong>예요.</p>
+          <p>혼자 가면 빨리 가지만, 같은 방향을 향한 사람들이 서로의 발견을 꺼내 놓으면 <strong>혼자서는 절대 도달할 수 없는 곳</strong>까지 갑니다.</p>
+          <p class="font-bold text-brand-ink bg-brand-accent inline-block px-3 py-1 rounded">내가 꺼낸 만큼 곱해져서 나에게 돌아옵니다.</p>
+          <p class="text-2xl font-black mt-6">W1에서 만나요. 🧽</p>
+          <p class="text-right text-brand-mute">— 셀피쉬클럽 드림</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-brand-line bg-brand-ink text-brand-cream/70 py-8 mt-12">
+    <div class="max-w-3xl mx-auto px-6 text-center text-sm">
+      <p>🧽 셀피쉬클럽 · 스폰지클럽 1기</p>
+      <p class="mt-2 text-xs">문의: <a href="mailto:public.selfishclub@gmail.com" class="underline">public.selfishclub@gmail.com</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 라디오/체크박스 시각 선택 상태 =====
+    document.querySelectorAll('.radio-row input[type="radio"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const name = input.name;
+        document.querySelectorAll(`.radio-row input[name="${name}"]`).forEach(i => {
+          i.closest('.radio-row').classList.toggle('selected', i.checked);
+        });
+      });
+    });
+    document.querySelectorAll('.checkbox-row input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', () => {
+        input.closest('.checkbox-row').classList.toggle('selected', input.checked);
+      });
+    });
+
+    // ===== Q6 '그 외' 분기 =====
+    const q6OtherRadio = document.getElementById('q6Other');
+    const q6OtherWrap = document.getElementById('q6OtherWrap');
+    document.querySelectorAll('input[name="q6"]').forEach(r => {
+      r.addEventListener('change', () => {
+        q6OtherWrap.classList.toggle('active', q6OtherRadio.checked);
+      });
+    });
+
+    // ===== Q14 '전부 참여 가능' 상호배제 =====
+    const q14All = document.querySelector('#q14All input');
+    const q14Others = document.querySelectorAll('#q14Group input[type="checkbox"]:not(#q14All input)');
+    const q15Wrap = document.getElementById('q15Wrap');
+    const q15Field = document.getElementById('q15');
+
+    function updateQ15Visibility() {
+      const anyOtherChecked = Array.from(q14Others).some(c => c.checked);
+      q15Wrap.classList.toggle('active', anyOtherChecked);
+      if (anyOtherChecked) {
+        q15Field.setAttribute('required', '');
+      } else {
+        q15Field.removeAttribute('required');
+        q15Field.value = '';
+      }
+    }
+
+    q14All.addEventListener('change', () => {
+      if (q14All.checked) {
+        q14Others.forEach(c => {
+          c.checked = false;
+          c.closest('.checkbox-row').classList.remove('selected');
+        });
+      }
+      updateQ15Visibility();
+    });
+    q14Others.forEach(c => {
+      c.addEventListener('change', () => {
+        if (c.checked && q14All.checked) {
+          q14All.checked = false;
+          q14All.closest('.checkbox-row').classList.remove('selected');
+        }
+        updateQ15Visibility();
+      });
+    });
+
+    // ===== Q18 → Q19 분기 =====
+    const q19Wrap = document.getElementById('q19Wrap');
+    const q19Field = document.getElementById('q19');
+    document.querySelectorAll('input[name="q18"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const isVolunteer = r.value === '지원' && r.checked;
+        q19Wrap.classList.toggle('active', isVolunteer);
+        if (isVolunteer) q19Field.setAttribute('required', '');
+        else { q19Field.removeAttribute('required'); q19Field.value = ''; }
+      });
+    });
+
+    // ===== 진행률 =====
+    const form = document.getElementById('surveyForm');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    function updateProgress() {
+      const requiredFields = form.querySelectorAll('[required]');
+      let total = 0, filled = 0;
+      const radioGroups = new Set();
+      requiredFields.forEach(f => {
+        if (f.type === 'radio') {
+          if (!radioGroups.has(f.name)) {
+            radioGroups.add(f.name);
+            total++;
+            if (form.querySelector(`input[name="${f.name}"]:checked`)) filled++;
+          }
+        } else {
+          total++;
+          if (f.value && f.value.trim()) filled++;
+        }
+      });
+      const pct = total === 0 ? 0 : Math.round((filled / total) * 100);
+      progressBar.style.width = pct + '%';
+      progressText.textContent = pct + '%';
+    }
+    form.addEventListener('input', updateProgress);
+    form.addEventListener('change', updateProgress);
+
+    // ===== 제출 =====
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // 검증
+      const errors = [];
+      form.querySelectorAll('.question-block').forEach(b => b.classList.remove('has-error'));
+
+      const requiredFields = form.querySelectorAll('[required]');
+      const checkedGroups = new Set();
+      requiredFields.forEach(f => {
+        if (f.type === 'radio') {
+          if (checkedGroups.has(f.name)) return;
+          checkedGroups.add(f.name);
+          if (!form.querySelector(`input[name="${f.name}"]:checked`)) {
+            errors.push(f.closest('.question-block').querySelector('.field-label').textContent.split('.')[0]);
+            f.closest('.question-block').classList.add('has-error');
+          }
+        } else if (!f.value || !f.value.trim()) {
+          errors.push(f.closest('.question-block').querySelector('.field-label').textContent.split('.')[0]);
+          f.closest('.question-block').classList.add('has-error');
+        } else if (f.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value)) {
+          errors.push(f.closest('.question-block').querySelector('.field-label').textContent.split('.')[0] + ' (이메일 형식)');
+          f.closest('.question-block').classList.add('has-error');
+        }
+      });
+
+      const formError = document.getElementById('formError');
+      const formErrorList = document.getElementById('formErrorList');
+      if (errors.length > 0) {
+        formError.style.display = 'block';
+        formErrorList.textContent = '미입력: ' + errors.join(', ');
+        const firstErr = form.querySelector('.has-error');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      formError.style.display = 'none';
+
+      // 데이터 수집
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((v, k) => {
+        if (data[k]) {
+          data[k] = Array.isArray(data[k]) ? [...data[k], v] : [data[k], v];
+        } else {
+          data[k] = v;
+        }
+      });
+      data.submittedAt = new Date().toISOString();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '제출 중...';
+
+      try {
+        // ⬇️ Google Apps Script Web App URL — 배포 후 여기 붙여넣기
+        const ENDPOINT = window.SURVEY_ENDPOINT || 'REPLACE_WITH_GAS_WEB_APP_URL';
+
+        if (ENDPOINT && ENDPOINT !== 'REPLACE_WITH_GAS_WEB_APP_URL') {
+          // GAS 호환: text/plain 으로 preflight 회피
+          const res = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(data),
+            redirect: 'follow',
+          });
+          if (!res.ok) throw new Error('전송 실패');
+          const json = await res.json().catch(() => ({}));
+          if (json && json.success === false) throw new Error(json.error || '전송 실패');
+        } else {
+          // 엔드포인트 미설정 시 콘솔 + 로컬스토리지 백업
+          console.log('[스폰지클럽 서베이 제출]', data);
+          const all = JSON.parse(localStorage.getItem('sponge_submissions') || '[]');
+          all.push(data);
+          localStorage.setItem('sponge_submissions', JSON.stringify(all));
+        }
+
+        // 성공 화면
+        document.getElementById('surveyForm').classList.add('hidden-screen');
+        const success = document.getElementById('successScreen');
+        success.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        alert('제출 중 오류가 발생했습니다. 다시 시도해주세요.\n계속 문제가 발생하면 public.selfishclub@gmail.com 으로 연락 주세요.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '제출하기 🧽';
+      }
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>
