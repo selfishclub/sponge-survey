@@ -161,17 +161,38 @@
       $('emptyState').classList.add('hidden');
       $('tableWrap').classList.remove('hidden');
 
-      const head = HEADERS.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
+      const head = '<th>액션</th>' + HEADERS.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
       $('tableHead').innerHTML = head;
 
       const body = items.map(it => {
-        return '<tr>' + HEADERS.map(h => {
+        const id = it._id || '';
+        const actionTd = `<td><button class="btn-coral btn delete-btn" data-id="${id}">삭제</button></td>`;
+        return '<tr>' + actionTd + HEADERS.map(h => {
           const v = it[h] ?? '';
           if (h === 'submittedAt') return `<td class="whitespace-nowrap">${fmtDate(v)}</td>`;
           return `<td><div class="truncate-cell" title="${(v + '').replace(/"/g, '&quot;')}">${(v + '').replace(/</g, '&lt;')}</div></td>`;
         }).join('') + '</tr>';
       }).join('');
       $('tableBody').innerHTML = body;
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.dataset.id;
+          if (!id) return;
+          if (!confirm('이 응답을 삭제하시겠습니까?\n\n' + id)) return;
+          const token = getToken();
+          const res = await fetch(`${API_BASE}/api/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ id }),
+          });
+          if (res.ok) {
+            load();
+          } else {
+            alert('삭제 실패: ' + res.status);
+          }
+        });
+      });
     }
 
     async function load() {

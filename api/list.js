@@ -13,6 +13,7 @@ async function listAll() {
   if (keys.length === 0) return [];
   const items = await kv.mget(...keys);
   return items
+    .map((it, i) => it ? { ...it, _id: keys[i] } : null)
     .filter(Boolean)
     .sort((a, b) => (a.submittedAt || '').localeCompare(b.submittedAt || ''));
 }
