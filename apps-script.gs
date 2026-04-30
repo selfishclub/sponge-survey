@@ -1,16 +1,20 @@
 /**
- * 스폰지클럽 1기 사전 서베이 — Google Apps Script 백엔드
+ * 스폰지클럽 1기 사전 서베이 — Standalone Apps Script 백엔드
  *
- * 사용 방법:
- * 1. 새 Google 스프레드시트 생성
- * 2. 확장 프로그램 → Apps Script
- * 3. 이 파일의 코드 전체를 복사해서 붙여넣기
- * 4. 배포 → 새 배포 → 유형: 웹 앱
+ * 셋업 (claude.selfish@gmail.com 계정에서 진행):
+ * 1. https://script.google.com 접속 → 좌측 상단 [+ 새 프로젝트]
+ * 2. 이 코드 전체를 복사해서 붙여넣기 → 💾 저장
+ * 3. 배포 → 새 배포 → 유형: 웹 앱
  *    - 다음 사용자 인증으로 실행: 나
  *    - 액세스 권한이 있는 사용자: 모든 사용자
- * 5. 발급되는 웹 앱 URL을 index.html의 SURVEY_ENDPOINT에 입력
+ * 4. 권한 승인 → 발급된 웹 앱 URL을 채팅에 공유
+ *
+ * 시트 공유 (public.selfishclub 계정에서):
+ * - 시트 우측 상단 [공유] → "링크가 있는 모든 사용자" + 편집자 권한
+ * - 또는 claude.selfish@gmail.com 을 편집자로 추가
  */
 
+const SPREADSHEET_ID = '15B_QVz9NaDHJpYnb_2bZsRjRuqq41P-XPtf9jWJ4pTU';
 const SHEET_NAME = 'submissions';
 
 const HEADERS = [
@@ -42,7 +46,7 @@ const HEADERS = [
 
 function doPost(e) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     let sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_NAME);
