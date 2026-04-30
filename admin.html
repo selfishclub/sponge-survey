@@ -62,7 +62,8 @@
         <div class="flex gap-2 flex-wrap">
           <button id="refreshBtn" class="btn">🔄 새로고침</button>
           <button id="csvBtn" class="btn btn-accent">⬇️ CSV 다운로드</button>
-          <button id="copyTsvBtn" class="btn btn-accent">📋 시트 복사 (TSV)</button>
+          <button id="exportSheetsBtn" class="btn btn-accent">📊 Google Sheets로 내보내기</button>
+          <button id="copyTsvBtn" class="btn">📋 TSV만 복사</button>
         </div>
       </div>
 
@@ -74,11 +75,11 @@
       </div>
 
       <div class="bg-white border-2 border-[#0a0a0a] rounded-xl mb-8 p-4">
-        <h2 class="font-bold mb-3">📑 Google Sheets에 붙여넣기</h2>
+        <h2 class="font-bold mb-3">📑 Google Sheets로 내보내는 방법</h2>
         <ol class="text-sm space-y-1 text-[#6b6b6b] list-decimal pl-5">
-          <li>위 <strong>"📋 시트 복사 (TSV)"</strong> 버튼 클릭 → 클립보드에 복사됨</li>
-          <li>대상 Google Sheets 열고 A1 셀 클릭 → <strong>Cmd+V</strong> 붙여넣기 → 끝</li>
-          <li>또는 <strong>CSV 다운로드</strong> → 시트 메뉴 <strong>파일 → 가져오기 → 업로드 → CSV</strong></li>
+          <li><strong>"📊 Google Sheets로 내보내기"</strong> 클릭 → 새 시트 자동 열림 + TSV 자동 복사 → 시트 A1 셀에 <strong>Cmd+V</strong> 한 번이면 끝 ⭐</li>
+          <li>또는 <strong>"📋 TSV만 복사"</strong> 클릭 → 기존 시트 A1에 <strong>Cmd+V</strong></li>
+          <li>또는 <strong>"⬇️ CSV 다운로드"</strong> → 시트 메뉴 <strong>파일 → 가져오기 → 업로드</strong></li>
         </ol>
       </div>
 
@@ -100,7 +101,7 @@
     const TOKEN_KEY = 'sponge_admin_token';
 
     const HEADERS = [
-      'submittedAt','Q1_이름','Q2_이메일','Q3_연락처','Q4_GitHub이메일','Q5_현재하는일',
+      'submittedAt','Q1_이름','Q2_이메일','Q3_연락처','연령대','Q4_GitHub이메일','Q5_현재하는일',
       'Q6_카테고리','Q6_기타입력','Q7_참여이유','Q8_AI사용경험','Q9_바이브코딩','Q10_Claude사용',
       'Q11_막힌점','Q12_시간확보','Q13_포기할것','Q14_불참주차','Q15_사유','Q16_W6오프라인',
       'Q17_지역','Q18_부조장','Q19_부조장이유','Q20_기억되고싶은모습','Q21_집중영역','Q22_다짐'
@@ -247,8 +248,8 @@
       URL.revokeObjectURL(url);
     });
 
-    // ===== TSV 클립보드 (시트 붙여넣기용) =====
-    $('copyTsvBtn').addEventListener('click', async () => {
+    // ===== TSV 빌드 공통 =====
+    function buildTsv() {
       const items = window._items || [];
       const tsvLines = [HEADERS.join('\t')];
       for (const it of items) {
@@ -257,15 +258,38 @@
           return v;
         }).join('\t'));
       }
-      const tsv = tsvLines.join('\n');
+      return tsvLines.join('\n');
+    }
+
+    // ===== TSV만 복사 =====
+    $('copyTsvBtn').addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(tsv);
+        await navigator.clipboard.writeText(buildTsv());
         const btn = $('copyTsvBtn');
         const orig = btn.textContent;
         btn.textContent = '✅ 복사됨! Cmd+V로 붙여넣기';
         setTimeout(() => btn.textContent = orig, 2500);
       } catch {
         alert('클립보드 접근이 거부됐습니다.');
+      }
+    });
+
+    // ===== Google Sheets로 내보내기 (TSV 복사 + sheets.new 새 탭) =====
+    $('exportSheetsBtn').addEventListener('click', async () => {
+      const items = window._items || [];
+      if (items.length === 0) {
+        alert('내보낼 응답이 아직 없습니다.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(buildTsv());
+        window.open('https://sheets.new', '_blank');
+        const btn = $('exportSheetsBtn');
+        const orig = btn.textContent;
+        btn.textContent = '✅ 새 시트 열림! A1에 Cmd+V';
+        setTimeout(() => btn.textContent = orig, 4000);
+      } catch (e) {
+        alert('클립보드 접근이 거부됐습니다.\n브라우저 설정에서 클립보드 권한을 허용해주세요.');
       }
     });
 
