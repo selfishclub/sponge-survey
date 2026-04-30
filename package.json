@@ -1,0 +1,9 @@
+{
+  "name": "sponge-survey",
+  "version": "1.0.0",
+  "private": true,
+  "description": "스폰지클럽 1기 사전 서베이 — Vercel + KV",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  }
+}

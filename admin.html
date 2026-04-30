@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스폰지클럽 1기 — 어드민</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Pretendard', system-ui, sans-serif; background: #faf8f3; color: #0a0a0a; }
+    .btn { background: #0a0a0a; color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: 0; transition: opacity .15s; }
+    .btn:hover { opacity: .85; }
+    .btn-accent { background: #e9ed12; color: #0a0a0a; }
+    .btn-coral { background: #ff6f59; color: #fff; padding: 6px 12px; font-size: .8rem; }
+    input[type="password"], input[type="text"] {
+      width: 100%; padding: 12px 14px; border: 1.5px solid #e8e6df; border-radius: 8px;
+      font-size: 1rem; background: #fff; font-family: inherit;
+    }
+    input:focus { outline: none; border-color: #0a0a0a; box-shadow: 0 0 0 3px rgba(233, 237, 18, .4); }
+    table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e8e6df; vertical-align: top; }
+    th { background: #0a0a0a; color: #fff; font-weight: 700; position: sticky; top: 0; white-space: nowrap; }
+    tbody tr:hover { background: #fffde6; }
+    td { max-width: 320px; word-wrap: break-word; }
+    .truncate-cell { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .truncate-cell:hover { white-space: normal; overflow: visible; }
+    .stat-card { background: #fff; border: 2px solid #0a0a0a; border-radius: 12px; padding: 18px 22px; }
+    .stat-num { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    details summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+  </style>
+</head>
+<body>
+  <header class="border-b border-[#e8e6df] bg-white">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🧽</span>
+        <span class="font-bold">스폰지클럽 1기 — 어드민</span>
+      </div>
+      <div id="logoutBox" class="hidden">
+        <button id="logoutBtn" class="btn-coral btn">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- 로그인 -->
+    <section id="loginSection" class="max-w-md mx-auto mt-12">
+      <h1 class="text-3xl font-black mb-2">🔐 어드민 로그인</h1>
+      <p class="text-sm text-[#6b6b6b] mb-6">운영진 비밀번호를 입력하세요.</p>
+      <form id="loginForm" class="space-y-4">
+        <input type="password" id="tokenInput" placeholder="비밀번호" autocomplete="current-password" autofocus />
+        <button type="submit" class="btn w-full" style="box-shadow: 4px 4px 0 #e9ed12">로그인</button>
+        <p id="loginError" class="text-[#ff6f59] text-sm font-semibold hidden">비밀번호가 틀렸습니다.</p>
+      </form>
+    </section>
+
+    <!-- 대시보드 -->
+    <section id="dashSection" class="hidden">
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <h1 class="text-3xl font-black">📊 응답 현황</h1>
+        <div class="flex gap-2 flex-wrap">
+          <button id="refreshBtn" class="btn">🔄 새로고침</button>
+          <button id="csvBtn" class="btn btn-accent">⬇️ CSV 다운로드</button>
+          <button id="copyTsvBtn" class="btn btn-accent">📋 시트 복사 (TSV)</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="stat-card"><div class="text-xs text-[#6b6b6b] font-semibold mb-1">총 응답</div><div class="stat-num" id="statTotal">0</div></div>
+        <div class="stat-card"><div class="text-xs text-[#6b6b6b] font-semibold mb-1">부조장 지원</div><div class="stat-num" id="statLeader">0</div></div>
+        <div class="stat-card"><div class="text-xs text-[#6b6b6b] font-semibold mb-1">W6 오프라인 가능</div><div class="stat-num" id="statW6">0</div></div>
+        <div class="stat-card"><div class="text-xs text-[#6b6b6b] font-semibold mb-1">시간 확보 OK</div><div class="stat-num" id="statTime">0</div></div>
+      </div>
+
+      <div class="bg-white border-2 border-[#0a0a0a] rounded-xl mb-8 p-4">
+        <h2 class="font-bold mb-3">📑 Google Sheets에 붙여넣기</h2>
+        <ol class="text-sm space-y-1 text-[#6b6b6b] list-decimal pl-5">
+          <li>위 <strong>"📋 시트 복사 (TSV)"</strong> 버튼 클릭 → 클립보드에 복사됨</li>
+          <li>대상 Google Sheets 열고 A1 셀 클릭 → <strong>Cmd+V</strong> 붙여넣기 → 끝</li>
+          <li>또는 <strong>CSV 다운로드</strong> → 시트 메뉴 <strong>파일 → 가져오기 → 업로드 → CSV</strong></li>
+        </ol>
+      </div>
+
+      <div id="emptyState" class="hidden text-center py-16 text-[#6b6b6b]">
+        <p class="text-lg">아직 응답이 없습니다.</p>
+      </div>
+
+      <div id="tableWrap" class="bg-white border border-[#e8e6df] rounded-xl overflow-auto" style="max-height: 70vh">
+        <table id="dataTable">
+          <thead><tr id="tableHead"></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = window.API_BASE || '';
+    const TOKEN_KEY = 'sponge_admin_token';
+
+    const HEADERS = [
+      'submittedAt','Q1_이름','Q2_이메일','Q3_연락처','Q4_GitHub이메일','Q5_현재하는일',
+      'Q6_카테고리','Q6_기타입력','Q7_참여이유','Q8_AI사용경험','Q9_바이브코딩','Q10_Claude사용',
+      'Q11_막힌점','Q12_시간확보','Q13_포기할것','Q14_불참주차','Q15_사유','Q16_W6오프라인',
+      'Q17_지역','Q18_부조장','Q19_부조장이유','Q20_기억되고싶은모습','Q21_집중영역','Q22_다짐'
+    ];
+
+    const $ = (id) => document.getElementById(id);
+
+    function getToken() { return sessionStorage.getItem(TOKEN_KEY); }
+    function setToken(t) { sessionStorage.setItem(TOKEN_KEY, t); }
+    function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
+
+    async function fetchList() {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/list`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) {
+        clearToken();
+        showLogin();
+        $('loginError').classList.remove('hidden');
+        $('loginError').textContent = '세션이 만료됐습니다. 다시 로그인해주세요.';
+        return null;
+      }
+      if (!res.ok) throw new Error('fetch failed');
+      return res.json();
+    }
+
+    function showLogin() {
+      $('loginSection').classList.remove('hidden');
+      $('dashSection').classList.add('hidden');
+      $('logoutBox').classList.add('hidden');
+    }
+
+    function showDash() {
+      $('loginSection').classList.add('hidden');
+      $('dashSection').classList.remove('hidden');
+      $('logoutBox').classList.remove('hidden');
+    }
+
+    function fmtDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      } catch { return iso; }
+    }
+
+    function render(items) {
+      $('statTotal').textContent = items.length;
+      $('statLeader').textContent = items.filter(i => i.Q18_부조장 === '지원').length;
+      $('statW6').textContent = items.filter(i => i.Q16_W6오프라인 === '참여 가능').length;
+      $('statTime').textContent = items.filter(i => i.Q12_시간확보 === '확보 가능').length;
+
+      if (items.length === 0) {
+        $('emptyState').classList.remove('hidden');
+        $('tableWrap').classList.add('hidden');
+        return;
+      }
+      $('emptyState').classList.add('hidden');
+      $('tableWrap').classList.remove('hidden');
+
+      const head = HEADERS.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('');
+      $('tableHead').innerHTML = head;
+
+      const body = items.map(it => {
+        return '<tr>' + HEADERS.map(h => {
+          const v = it[h] ?? '';
+          if (h === 'submittedAt') return `<td class="whitespace-nowrap">${fmtDate(v)}</td>`;
+          return `<td><div class="truncate-cell" title="${(v + '').replace(/"/g, '&quot;')}">${(v + '').replace(/</g, '&lt;')}</div></td>`;
+        }).join('') + '</tr>';
+      }).join('');
+      $('tableBody').innerHTML = body;
+    }
+
+    async function load() {
+      try {
+        const data = await fetchList();
+        if (!data) return;
+        window._items = data.items;
+        render(data.items);
+      } catch (e) {
+        alert('로딩 실패: ' + e.message);
+      }
+    }
+
+    // ===== 로그인 =====
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = $('tokenInput').value.trim();
+      if (!token) return;
+      setToken(token);
+      const data = await fetchList();
+      if (data) {
+        $('loginError').classList.add('hidden');
+        showDash();
+        window._items = data.items;
+        render(data.items);
+      }
+    });
+
+    // ===== 로그아웃 =====
+    $('logoutBtn').addEventListener('click', () => {
+      clearToken();
+      $('tokenInput').value = '';
+      showLogin();
+    });
+
+    // ===== 새로고침 =====
+    $('refreshBtn').addEventListener('click', load);
+
+    // ===== CSV 다운로드 =====
+    $('csvBtn').addEventListener('click', async () => {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/csv`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) { alert('CSV 다운로드 실패'); return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sponge-survey-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ===== TSV 클립보드 (시트 붙여넣기용) =====
+    $('copyTsvBtn').addEventListener('click', async () => {
+      const items = window._items || [];
+      const tsvLines = [HEADERS.join('\t')];
+      for (const it of items) {
+        tsvLines.push(HEADERS.map(h => {
+          const v = (it[h] ?? '').toString().replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/\r/g, '');
+          return v;
+        }).join('\t'));
+      }
+      const tsv = tsvLines.join('\n');
+      try {
+        await navigator.clipboard.writeText(tsv);
+        const btn = $('copyTsvBtn');
+        const orig = btn.textContent;
+        btn.textContent = '✅ 복사됨! Cmd+V로 붙여넣기';
+        setTimeout(() => btn.textContent = orig, 2500);
+      } catch {
+        alert('클립보드 접근이 거부됐습니다.');
+      }
+    });
+
+    // ===== 자동 로그인 시도 =====
+    if (getToken()) {
+      (async () => {
+        const data = await fetchList();
+        if (data) {
+          showDash();
+          window._items = data.items;
+          render(data.items);
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

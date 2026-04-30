@@ -678,16 +678,14 @@
       submitBtn.textContent = '제출 중...';
 
       try {
-        // ⬇️ Google Apps Script Web App URL
-        const ENDPOINT = window.SURVEY_ENDPOINT || 'https://script.google.com/macros/s/AKfycbxEIGuHzSxKJibfKJ1lH1Ixm5_cvurAdANsDDOmhu5N4LHOLTI-SkFa1GYcvq_6UjlEIQ/exec';
+        // same-origin (/api/submit)
+        const ENDPOINT = window.SURVEY_ENDPOINT || '/api/submit';
 
         if (ENDPOINT) {
-          // GAS 호환: text/plain 으로 preflight 회피
           const res = await fetch(ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
-            redirect: 'follow',
           });
           if (!res.ok) throw new Error('전송 실패');
           const json = await res.json().catch(() => ({}));
