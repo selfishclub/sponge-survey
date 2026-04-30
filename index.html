@@ -678,10 +678,10 @@
       submitBtn.textContent = '제출 중...';
 
       try {
-        // ⬇️ Google Apps Script Web App URL — 배포 후 여기 붙여넣기
-        const ENDPOINT = window.SURVEY_ENDPOINT || 'REPLACE_WITH_GAS_WEB_APP_URL';
+        // ⬇️ Google Apps Script Web App URL
+        const ENDPOINT = window.SURVEY_ENDPOINT || 'https://script.google.com/macros/s/AKfycbxEIGuHzSxKJibfKJ1lH1Ixm5_cvurAdANsDDOmhu5N4LHOLTI-SkFa1GYcvq_6UjlEIQ/exec';
 
-        if (ENDPOINT && ENDPOINT !== 'REPLACE_WITH_GAS_WEB_APP_URL') {
+        if (ENDPOINT) {
           // GAS 호환: text/plain 으로 preflight 회피
           const res = await fetch(ENDPOINT, {
             method: 'POST',
